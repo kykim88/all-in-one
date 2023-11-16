@@ -1,12 +1,6 @@
-# yeongam generation collector 
+# kafka sample app
 
-염암풍력발전소 발전량 수집 (작성중)
-
-#### Table of contents: 
-
-[Installation : Python env](#installation--python-env)  
-[Test : Local](#test--local)  
-[Run : Local Docker](#run--local-docker) 
+kafka sample producer / consumer
 
 ## Installation : Python env
  
