@@ -1,0 +1,21 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "김경연/플랫폼팀/서비스개발부문", email = "ky.kim@haezoom.com"},
+]
+dependencies = [
+    "asyncua>=1.0.4",
+    "loguru>=0.7.2",
+    "confluent-kafka>=2.2.0",
+    "fastapi>=0.104.0",
+    "uvicorn>=0.23.2",
+    "dataclasses-avroschema[faker]>=0.52.1",
+    "requests>=2.31.0",
+    "pydantic-settings>=2.1.0",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+

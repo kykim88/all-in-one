@@ -1,0 +1,82 @@
+version: "3.8"
+
+services:
+  test-producer:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 29080:80
+    environment:
+      APPENV: "local"
+    depends_on:
+      - kafka
+      - schemaregistry
+
+  test-consumer:
+    build:
+      context: ./
+      dockerfile: Dockerfile2
+    ports:
+      - 29081:80
+    environment:
+      APPENV: "local"
+    depends_on:
+      - kafka
+      - schemaregistry
+      - test-producer
+
+  kafka:
+    image: confluentinc/cp-kafka:6.0.0
+    ports:
+      - "29092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_SCHEMA_REGISTRY_URL: "schemaregistry:8085"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+      - kafka-secrets:/etc/kafka/secrets
+    depends_on:
+      - zookeeper
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.0.0
+    ports:
+      - "32181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 32181
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-log:/var/lib/zookeeper/log
+      - zookeeper-secrets:/etc/zookeeper/secrets
+      
+  schemaregistry:
+    image: confluentinc/cp-schema-registry:5.1.2
+    restart: always
+    depends_on:
+      - zookeeper
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:32181"
+      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+    ports:
+      - 8085:8085
+  
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 4004:8080
+    environment:
+      # local kafka
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schemaregistry:8085
+
+volumes:
+  kafka-data:
+  kafka-secrets:
+  zookeeper-data:
+  zookeeper-log:
+  zookeeper-secrets:
